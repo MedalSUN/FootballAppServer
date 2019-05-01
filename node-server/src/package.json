@@ -1,0 +1,25 @@
+{
+  "name": "caserver",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "async-request": "^1.2.0",
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "node-fetch": "^1.7.3",
+    "node-jose": "^0.11.0",
+    "nodemon": "^1.12.5",
+    "postgraphile": "^4.0.1",
+    "postgraphile-plugin-connection-filter": "^1.0.0-beta.20",
+    "raven": "^2.2.1",
+    "request": "^2.83.0"
+  }
+}
