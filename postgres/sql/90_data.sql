@@ -30,9 +30,33 @@ insert into ca_private.person_account (person_id, email, password_hash) values
   ((select id from ca.person where first_name = 'Tester2'), 'test2@test.test', crypt('123', gen_salt('bf')));  
    
   
+-- 球队基本信息的初始模拟数据
+insert into ca.football_team (team_name, member_number) values
+  ('工程足球队', 25),
+  ('工商足球队', 25),
+  ('公法足球队', 25),
+  ('会计足球队', 25),
+  ('数学足球队', 25),
+  ('经济足球队', 25),
+  ('金融足球队', 25),
+  ('信电足球队', 25),
+  ('外院足球队', 25),
+  ('国教足球队', 25),
+  ('教职工足球队', 25),
+  ('统计足球队', 25);
+
+-- 球队与球员的关联表模拟数据
+insert into ca.person_team (person_id, team_id) values 
+((select id from ca.person where first_name = 'Tester'), (select id from ca.football_team where team_name = '工程足球队')),
+((select id from ca.person where first_name = 'Tester1'), (select id from ca.football_team where team_name = '工商足球队')),
+((select id from ca.person where first_name = 'Tester2'), (select id from ca.football_team where team_name = '公法足球队'));
 
 
-
+-- 球场的基本信息表的初始模拟数据
+insert into ca.football_court (court_name, court_location) values 
+('山商诺坎普', '山东工商学院东校东操场'),
+('山商卡尔德隆', '山东工商学院东校小操场'),
+('山商伯纳乌', '山东工商学院西校操场');
 
 
 commit;

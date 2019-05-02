@@ -66,6 +66,42 @@ create table ca.person (
 );
 
 
+-- 球队基本信息表
+-- 里面的数据不是任何人可以更改的，是由管理员增加的，每个赛季进行更改
+create table ca.football_team (
+   id               uuid DEFAULT gen_random_uuid () primary key,
+   team_name        text not null check (char_length(team_name) < 80),
+   member_number    integer
+);
+grant select on table ca.football_team to ca_anonymous, ca_person;
+comment on table ca.football_team is '球队基本信息表';
+
+
+-- 球队与球员的关联信息表
+create table ca.person_team (
+    person_id       uuid not null references ca.person(id),
+    team_id         uuid not null references ca.football_team(id)
+);
+grant select on table ca.person_team to ca_anonymous, ca_person;
+-- grant update, insert on table ca.person_team to ca_person; 关联表的插入更新应该由注册函数操作完成，不能直接授权于登录用户
+comment on table ca.person_team is '球队与球员的关联信息表';
+
+
+
+-- 场地基本信息表
+create table ca.football_court (
+     id              uuid DEFAULT gen_random_uuid () primary key,
+     court_name      text not null check (char_length(court_name) < 80),
+     court_location      text not null check (char_length(court_location) < 80)
+);
+-- 只是将场地的查询权限更新，原始数据是由管理员完成
+grant select on table ca.football_court to ca_anonymous, ca_person;
+comment on table ca.football_court is '球场基本信息表';
+
+
+
+
+
 
 
 -- 修改默认权限： 删除授予函数的公共权限（对于接下来的函数）
