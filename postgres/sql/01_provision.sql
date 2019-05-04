@@ -19,10 +19,10 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto"; -- Postgres pgcrypto扩展 用于加�
 CREATE EXTENSION IF NOT EXISTS "citext"; 
 
 CREATE SCHEMA ca;
-CREATE SCHEMA ca_private;  --弃用private保密模式
+CREATE SCHEMA ca_private;
 
 CREATE ROLE ca_postgraphile LOGIN PASSWORD 'password'; 
-CREATE ROLE ca_anonymous;  --弃用未登录用户，全部都是登录用户的操作
+CREATE ROLE ca_anonymous;
 GRANT ca_anonymous TO ca_postgraphile; 
 CREATE ROLE ca_person; 
 GRANT ca_person TO ca_postgraphile;
@@ -36,6 +36,7 @@ GRANT ca_anonymous TO ca_person;
 create table ca.image (
   id               uuid DEFAULT gen_random_uuid () primary key,
   url              text,
+  img_user             text not null check (char_length(img_user) < 80),-- 目前此表只存储头像和logo。使用这个字段进行引用
   updated_at       timestamp default now(),
   created_at       timestamp default now()  
 );
@@ -51,8 +52,10 @@ comment on table ca.image is '有球app所有的图片，暂定只存头像，�
 -- 球员基本信息表  （需要：1:更改名称；2:增加成员的球衣号码；3:球衣号码和头像进行关联）
 create table ca.person (
   id               uuid DEFAULT gen_random_uuid () primary key,
-  first_name       text not null check (char_length(first_name) < 80),
-  last_name        text check (char_length(last_name) < 80),
+  player_name      text not null check (char_length(player_name) < 80),
+  --last_name        text check (char_length(last_name) < 80),
+  team             text not null, -- person表中的team不能是引用football_team表的，注册时需要
+  shirt_num        integer not null, -- 球衣号码
   -- avatar           text, -- 未知意义
   -- birth_day        date,
   -- about            text,
@@ -60,7 +63,7 @@ create table ca.person (
   -- chat_state       chat_state_type default 'ACTIVE', 聊天状态，在线还是隐身，这里不需要
   -- hide_speaker     boolean default false,
   -- gift_barrier     integer default 0, 礼物信息，不需要
-  chat_id          text not null unique,  -- 这一部分是为了能够和leancloud进行连接的聊天id  在jwt中有需要
+  -- chat_id          text not null unique,  -- 这一部分是为了能够和leancloud进行连接的聊天id  在jwt中有需要 -- 2019-05-04删除chat_id字段
   updated_at       timestamp default now(),
   created_at       timestamp default now()
 );
@@ -71,7 +74,7 @@ create table ca.person (
 create table ca.football_team (
    id               uuid DEFAULT gen_random_uuid () primary key,
    team_name        text not null check (char_length(team_name) < 80),
-   member_number    integer
+   member_number    integer not null default 25
 );
 grant select on table ca.football_team to ca_anonymous, ca_person;
 comment on table ca.football_team is '球队基本信息表';
@@ -98,6 +101,61 @@ create table ca.football_court (
 grant select on table ca.football_court to ca_anonymous, ca_person;
 comment on table ca.football_court is '球场基本信息表';
 
+-- 赛程表
+-- 赛程表也是由管理员在赛季初插入数据
+create table ca.match_schedule (
+      id              uuid DEFAULT gen_random_uuid () primary key,
+      order_number    integer, -- 场序
+      wheel_number    integer, -- 比赛轮数
+      match_date      text not null check (char_length(match_date) < 80), -- 比赛日期（为了方便，直接设置为text格式）
+      team_a          uuid not null references ca.football_team(id), -- 主队
+      team_b          uuid not null references ca.football_team(id),   -- 客队
+      match_location  uuid not null references ca.football_court(id)  -- 场地
+);
+grant select on table ca.match_schedule to ca_anonymous, ca_person;
+comment on table ca.match_schedule is '赛程信息表';
+
+
+-- 每场比赛的进球数表
+-- 描述各个场序的比赛的进球数据
+create table ca.match_goal (
+      id                uuid DEFAULT gen_random_uuid () primary key,
+      oreder_id         uuid not null references ca.match_schedule(id),
+      goal_a            integer,-- 主队进球数
+      goal_b            integer--客队进球数
+);
+grant select on table ca.match_goal to ca_anonymous, ca_person;
+comment on table ca.match_goal is '每场比赛的进球数';
+
+-- 积分表
+-- 描述每个队的积分情况
+create table ca.score (
+      id                uuid DEFAULT gen_random_uuid () primary key,
+      team_id           uuid not null references ca.football_team(id),
+      team_score        integer not null default 0
+);
+grant select on table ca.score to ca_anonymous, ca_person;
+comment on table ca.score is '每个球队的积分';
+
+
+-- 射手榜
+-- 描述球员的进球数 （倒序排行）
+create table ca.shooter_list (
+      id                uuid DEFAULT gen_random_uuid () primary key,
+      shooter_id        uuid not null references ca.person(id),
+      goal_num          integer not null default 0
+);
+grant select on table ca.shooter_list to ca_anonymous, ca_person;
+comment on table ca.shooter_list is '射手榜';
+
+
+
+
+
+
+
+
+
 
 
 
@@ -118,34 +176,35 @@ create table ca_private.person_account (
   person_id        uuid primary key references ca.person(id) on delete cascade,
   email            text not null unique check (email ~* '^.+@.+\..+$'),
   password_hash    text not null,
-  phone_number     text, 
-  email_verified   boolean,
+  phone_number     text, -- 不需要电话号码
+  email_verified   boolean, -- 不需要判断邮箱是否相同，在注册时需要查询一遍
   -- person_user_type user_type, 人员的类型
   updated_at       timestamp default now(),
   created_at       timestamp default now()
 );
 
 -- 这里对private级别的账户信息授予权限，需要做进一步考虑========
-grant select on table ca_private.person_account to ca_anonymous, ca_person;
-grant update on table ca_private.person_account to ca_person;
-comment on table ca_private.person_account is 'Private information about a person’s account.';
-comment on column ca_private.person_account.password_hash is 'An opaque hash of the person’s password.';
+-- grant select on table ca_private.person_account to ca_anonymous, ca_person;
+-- grant update on table ca_private.person_account to ca_person;
+-- comment on table ca_private.person_account is 'Private information about a person’s account.';
+-- comment on column ca_private.person_account.password_hash is 'An opaque hash of the person’s password.';
 
 
 
 -- 创建函数： 用于注册用户 【修改名称和球衣号码等注册信息】
 -- 分别往两张表中插入信息：将名字插入ca.person将密码等插入ca_private.person_account
+-- 2019-05-04 更改注册时字段name
 create function ca.register_person(
-  first_name text,
-  last_name text,
+  player_name text,
+  -- last_name text,
   email text,
   password text
 ) returns ca.person as $$
 declare
   person ca.person;
 begin
-  insert into ca.person (first_name, last_name) values
-    (first_name, last_name)
+  insert into ca.person (player_name) values
+    (player_name)
     returning * into person;
 
   insert into ca_private.person_account (person_id, email, password_hash) values
@@ -155,18 +214,18 @@ begin
 end;
 $$ language plpgsql strict security definer;
 
-comment on function ca.register_person(text, text, text, text) is '注册一个用户';
+comment on function ca.register_person(text, text, text) is '注册一个用户';
 
 -- 创建一个数据类型： jwt
 create type ca.jwt as (
-  role text,
+  -- role text, 数据库中只有一个角色
   person_id uuid,
   exp integer
 );
 
 -- 创建一个数据类型：用于设定返回值authReturnType
--- chat_id是用于leancloud 即时通讯的
-CREATE TYPE auth_return_type AS (jwt ca.jwt, id uuid, chat_id text);
+-- chat_id是用于leancloud 即时通讯的 （chat_id text 已删除）
+CREATE TYPE auth_return_type AS (jwt ca.jwt, id uuid);
 
 
 -- 创建一个函数登录时使用，用于返回 authReturnType（GraphQL转换成驼峰法则）
@@ -184,8 +243,7 @@ BEGIN
   WHERE a.email = $1; 
 
   if account.password_hash = crypt(password, account.password_hash) then 
-    return (('ca_person', account.person_id, extract(epoch from (now() + interval '1 week')))::ca.jwt, account.person_id, 
-    (SELECT chat_id FROM ca.person WHERE id=account.person_id))::auth_return_type; 
+    return ((account.person_id, extract(epoch from (now() + interval '1 week')))::ca.jwt, account.person_id)::auth_return_type; 
   else 
     return null; 
   end if; 
@@ -225,7 +283,7 @@ grant execute on function ca.current_person() to ca_anonymous, ca_person;
 grant execute on function ca.current_person_id() to ca_anonymous, ca_person;
 
 -- 给非登录用户授予注册权限
-grant execute on function ca.register_person(text, text, text, text) to ca_anonymous;
+grant execute on function ca.register_person(text, text, text) to ca_anonymous;
 
 
 -- 在表上启用行级安全性
