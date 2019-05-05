@@ -36,7 +36,7 @@ GRANT ca_anonymous TO ca_person;
 create table ca.image (
   id               uuid DEFAULT gen_random_uuid () primary key,
   url              text,
-  img_user             text not null check (char_length(img_user) < 80),-- 目前此表只存储头像和logo。使用这个字段进行引用
+  img_user         text not null check (char_length(img_user) < 80),-- 目前此表只存储头像和logo。使用这个字段进行引用
   updated_at       timestamp default now(),
   created_at       timestamp default now()  
 );
@@ -56,6 +56,7 @@ create table ca.person (
   --last_name        text check (char_length(last_name) < 80),
   team             text not null, -- person表中的team不能是引用football_team表的，注册时需要
   shirt_num        integer not null, -- 球衣号码
+  player_img       uuid not null references ca.image(id), -- 球员的头像
   -- avatar           text, -- 未知意义
   -- birth_day        date,
   -- about            text,
@@ -74,20 +75,11 @@ create table ca.person (
 create table ca.football_team (
    id               uuid DEFAULT gen_random_uuid () primary key,
    team_name        text not null check (char_length(team_name) < 80),
+   team_logo        uuid not null references ca.image(id),
    member_number    integer not null default 25
 );
 grant select on table ca.football_team to ca_anonymous, ca_person;
 comment on table ca.football_team is '球队基本信息表';
-
-
--- 球队与球员的关联信息表
-create table ca.person_team (
-    person_id       uuid not null references ca.person(id),
-    team_id         uuid not null references ca.football_team(id)
-);
-grant select on table ca.person_team to ca_anonymous, ca_person;
--- grant update, insert on table ca.person_team to ca_person; 关联表的插入更新应该由注册函数操作完成，不能直接授权于登录用户
-comment on table ca.person_team is '球队与球员的关联信息表';
 
 
 
@@ -141,8 +133,8 @@ comment on table ca.score is '每个球队的积分';
 -- 射手榜
 -- 描述球员的进球数 （倒序排行）
 create table ca.shooter_list (
-      id                uuid DEFAULT gen_random_uuid () primary key,
-      shooter_id        uuid not null references ca.person(id),
+      -- id                uuid DEFAULT gen_random_uuid () primary key, 不需要再另添加主键，直接使用用户id即可
+      shooter_id        uuid not null references ca.person(id) primary key,
       goal_num          integer not null default 0
 );
 grant select on table ca.shooter_list to ca_anonymous, ca_person;
@@ -196,15 +188,22 @@ create table ca_private.person_account (
 -- 2019-05-04 更改注册时字段name
 create function ca.register_person(
   player_name text,
-  -- last_name text,
+  shirt_num integer, -- 由于数据库中图片表存的是text格式，所以必须转成text格式进行查询
+  team  text,
   email text,
   password text
 ) returns ca.person as $$
 declare
   person ca.person;
+  shirt_num_text text;
+  shirt_id uuid;
 begin
-  insert into ca.person (player_name) values
-    (player_name)
+
+  shirt_num_text = shirt_num::text;
+  select id into shirt_id from ca.image where img_user = shirt_num_text;
+
+  insert into ca.person (player_name, team, shirt_num, player_img) values
+    (player_name, team, shirt_num, shirt_id)
     returning * into person;
 
   insert into ca_private.person_account (person_id, email, password_hash) values
@@ -214,7 +213,7 @@ begin
 end;
 $$ language plpgsql strict security definer;
 
-comment on function ca.register_person(text, text, text) is '注册一个用户';
+comment on function ca.register_person(text, integer, text, text, text) is '注册一个用户';
 
 -- 创建一个数据类型： jwt
 create type ca.jwt as (
@@ -283,7 +282,7 @@ grant execute on function ca.current_person() to ca_anonymous, ca_person;
 grant execute on function ca.current_person_id() to ca_anonymous, ca_person;
 
 -- 给非登录用户授予注册权限
-grant execute on function ca.register_person(text, text, text) to ca_anonymous;
+grant execute on function ca.register_person(text,integer, text, text, text) to ca_anonymous;
 
 
 -- 在表上启用行级安全性
