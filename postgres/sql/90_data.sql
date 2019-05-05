@@ -9,6 +9,17 @@ insert into ca.image (url, img_user) values
   ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2266110047.jpg', '3'),
   ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '4'),
   ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '5'),
+  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '6'),
+  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '7'),
+  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '8'),
+  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '9'),
+  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '10'),
+  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '11'),
+  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '12'),
+  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '13'),
+  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '14'),
+  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '15'),
+  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '16'),
   
   ('https://thumbnail0.baidupcs.com/thumbnail/711491bd276393a4b83c7a3704026b5f?fid=211418021-250528-68627519701744&time=1556949600&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-loO1FJ1NGJG5QhY0hBqXye9UwYY%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2866359492817440018&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '信电logo'),
   ('https://thumbnail0.baidupcs.com/thumbnail/67a1cb1800021d443d6d81d7e1cd4815?fid=211418021-250528-18115142341781&time=1556953200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-ZZVYsN3V43oupmFUs09adU4YSVo%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2867779824426447168&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '外院logo'),
@@ -26,20 +37,20 @@ insert into ca.image (url, img_user) values
 
 
 -- simulate data for ca.person
-insert into ca.person (player_name, team, shirt_num) values
-  ('胡存浩', '工程足球队', 9),
-  ('郭林亿', '信电足球队', 11),
-  ('李浩', '工商足球队', 10),
-  ('徐强', '公法足球队', 6),
-  ('李进', '会计足球队', 8),
-  ('王锗凌', '数学足球队', 9),
-  ('李向远', '经济足球队', 7),
-  ('王东洋', '金融足球队', 7),
-  ('肖朝义', '外院足球队', 12),
-  ('郝嘉琪', '计科足球队', 9),
-  ('李晓峰', '国商足球队', 6),
-  ('吕长海', '教工足球队', 7),
-  ('贾睿智', '统计足球队', 10);
+insert into ca.person (player_name, team, shirt_num, player_img) values
+  ('胡存浩', '工程足球队', 9, (select id from ca.image where img_user = '9')),
+  ('郭林亿', '信电足球队', 11, (select id from ca.image where img_user = '11')),
+  ('李浩', '工商足球队', 10, (select id from ca.image where img_user = '10')),
+  ('徐强', '公法足球队', 6, (select id from ca.image where img_user = '6')),
+  ('李进', '会计足球队', 8, (select id from ca.image where img_user = '8')),
+  ('王锗凌', '数学足球队', 9, (select id from ca.image where img_user = '9')),
+  ('李向远', '经济足球队', 7, (select id from ca.image where img_user = '7')),
+  ('王东洋', '金融足球队', 7, (select id from ca.image where img_user = '7')),
+  ('肖朝义', '外院足球队', 12, (select id from ca.image where img_user = '12')),
+  ('郝嘉琪', '计科足球队', 9, (select id from ca.image where img_user = '9')),
+  ('李晓峰', '国商足球队', 6, (select id from ca.image where img_user = '6')),
+  ('吕长海', '教工足球队', 7, (select id from ca.image where img_user = '7')),
+  ('贾睿智', '统计足球队', 10, (select id from ca.image where img_user = '10'));
 
 --球员账户的模拟数据
 insert into ca_private.person_account (person_id, email, password_hash) values
@@ -59,36 +70,20 @@ insert into ca_private.person_account (person_id, email, password_hash) values
    
   
 -- 球队基本信息的初始模拟数据
-insert into ca.football_team (team_name, member_number) values
-  ('工程足球队', 25),
-  ('工商足球队', 25),
-  ('公法足球队', 25),
-  ('会计足球队', 25),
-  ('数学足球队', 25),
-  ('经济足球队', 25),
-  ('金融足球队', 25),
-  ('信电足球队', 25),
-  ('外院足球队', 25),
-  ('计科足球队', 25),
-  ('国商足球队', 25),
-  ('教工足球队', 25),
-  ('统计足球队', 25);
-
--- 球队与球员的关联表模拟数据
-insert into ca.person_team (person_id, team_id) values 
-((select id from ca.person where player_name = '胡存浩'), (select id from ca.football_team where team_name = '工程足球队')),
-((select id from ca.person where player_name = '郭林亿'), (select id from ca.football_team where team_name = '信电足球队')),
-((select id from ca.person where player_name = '李浩'), (select id from ca.football_team where team_name = '工商足球队')),
-((select id from ca.person where player_name = '郝嘉琪'), (select id from ca.football_team where team_name = '计科足球队')),
-((select id from ca.person where player_name = '徐强'), (select id from ca.football_team where team_name = '公法足球队')),
-((select id from ca.person where player_name = '李进'), (select id from ca.football_team where team_name = '计科足球队')),
-((select id from ca.person where player_name = '王锗凌'), (select id from ca.football_team where team_name = '数学足球队')),
-((select id from ca.person where player_name = '李向远'), (select id from ca.football_team where team_name = '经济足球队')),
-((select id from ca.person where player_name = '王东洋'), (select id from ca.football_team where team_name = '金融足球队')),
-((select id from ca.person where player_name = '肖朝义'), (select id from ca.football_team where team_name = '外院足球队')),
-((select id from ca.person where player_name = '李晓峰'), (select id from ca.football_team where team_name = '国商足球队')),
-((select id from ca.person where player_name = '吕长海'), (select id from ca.football_team where team_name = '教工足球队')),
-((select id from ca.person where player_name = '贾睿智'), (select id from ca.football_team where team_name = '统计足球队'));
+insert into ca.football_team (team_name, team_logo, member_number) values
+  ('工程足球队',(select id from ca.image where img_user = '工程logo'), 25),
+  ('工商足球队',(select id from ca.image where img_user = '工商logo'), 25),
+  ('公法足球队',(select id from ca.image where img_user = '公法logo'), 25),
+  ('会计足球队',(select id from ca.image where img_user = '会计logo'), 25),
+  ('数学足球队',(select id from ca.image where img_user = '数学logo'), 25),
+  ('经济足球队',(select id from ca.image where img_user = '经济logo'), 25),
+  ('金融足球队',(select id from ca.image where img_user = '金融logo'), 25),
+  ('信电足球队',(select id from ca.image where img_user = '信电logo'), 25),
+  ('外院足球队',(select id from ca.image where img_user = '外院logo'), 25),
+  ('计科足球队',(select id from ca.image where img_user = '计科logo'), 25),
+  ('国商足球队',(select id from ca.image where img_user = '国商logo'), 25),
+  ('教工足球队',(select id from ca.image where img_user = '教工logo'), 25),
+  ('统计足球队',(select id from ca.image where img_user = '统计logo'), 25);
 
 
 -- 球场的基本信息表的初始模拟数据
