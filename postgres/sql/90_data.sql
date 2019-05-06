@@ -21,19 +21,19 @@ insert into ca.image (url, img_user) values
   ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '15'),
   ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '16'),
   
-  ('https://thumbnail0.baidupcs.com/thumbnail/711491bd276393a4b83c7a3704026b5f?fid=211418021-250528-68627519701744&time=1556949600&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-loO1FJ1NGJG5QhY0hBqXye9UwYY%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2866359492817440018&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '信电logo'),
-  ('https://thumbnail0.baidupcs.com/thumbnail/67a1cb1800021d443d6d81d7e1cd4815?fid=211418021-250528-18115142341781&time=1556953200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-ZZVYsN3V43oupmFUs09adU4YSVo%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2867779824426447168&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '外院logo'),
-  ('https://thumbnail0.baidupcs.com/thumbnail/42679818779b0a8a85d323c2fc8e5e3a?fid=211418021-250528-840258939908874&time=1556953200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-w04HZS4AsL%2FSRdnXhE3usEqnX%2FM%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2867796586987936643&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '统计logo'),
-  ('https://thumbnail0.baidupcs.com/thumbnail/2c5da713245f05dd2393f54db738d88c?fid=211418021-250528-175770664835460&time=1556953200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-sNylbWgT57%2FlELENG%2Bd8Jbs7vrg%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2867853367690013616&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '数学logo'),
-  ('https://thumbnail0.baidupcs.com/thumbnail/423db2eb5eb2604f8de708fc1820c59f?fid=211418021-250528-1090673824518293&time=1556953200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-gNiqssJcvpv%2FYCkUnqg593uvqM4%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2867868255187456377&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '经济logo'),
-  ('https://thumbnail0.baidupcs.com/thumbnail/465ca5f262abd2caa580ab13112e0951?fid=211418021-250528-738265993775332&time=1556953200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-psGcGuEY9h1xzgTDD00pzBiO4t8%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2867924055703217378&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '金融logo'),
-  ('https://thumbnail0.baidupcs.com/thumbnail/70d1f1e8a6401d3bb89082c7951079b2?fid=211418021-250528-1058070576070843&time=1556953200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-08yMSRJUdWG6utdv2jV7aYqL9Do%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2867901713495157401&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '教工logo'),
-  ('https://thumbnail0.baidupcs.com/thumbnail/e6cc0ea1d981dc897771ce2a7f27f005?fid=211418021-250528-817647908071773&time=1556953200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-MYYpIdxjcIW%2F95OjREB6p3j5uJM%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2867913036579603770&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '计科logo'),
-  ('https://thumbnail0.baidupcs.com/thumbnail/6ffdba5024f5b505ae192267e9c4ab23?fid=211418021-250528-1039920569835393&time=1556953200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-fR2T0q09b%2FZxRSl7IlpacyDR61Q%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2867937789108360891&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '会计logo'),
-  ('https://thumbnail0.baidupcs.com/thumbnail/7c77f8870ab414f284849ebad3170a8a?fid=211418021-250528-586571305613374&time=1556953200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-iq3vSe%2FspTlc9sRtMRHJwtfEyYk%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2867948426167662691&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '国商logo'),
-  ('https://thumbnail0.baidupcs.com/thumbnail/d2777539dc24dd1d1d6cac527622f345?fid=211418021-250528-723974583356235&time=1556953200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-8%2FWAIPWRFU%2B7H6LkiUmeXyUs03c%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2867957486622132194&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '公法logo'),
-  ('https://thumbnail0.baidupcs.com/thumbnail/5cf000c5ce2d9fa6447c78477c5476ef?fid=211418021-250528-455897649120603&time=1556953200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-bJTfgGNA0EUhnELCPCI1uiKUgwk%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2867967277298578216&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '工商logo'),
-  ('https://thumbnail0.baidupcs.com/thumbnail/cccdac13760486fbc4281363a24ef50c?fid=211418021-250528-777869652266226&time=1556953200&rt=sh&sign=FDTAER-DCb740ccc5511e5e8fedcff06b081203-cj7JRdhlva9roYEh%2B55SvUsFigg%3D&expires=8h&chkv=0&chkbd=0&chkpc=&dp-logid=2867976870885512814&dp-callid=0&size=c710_u400&quality=100&vuk=-&ft=video', '工程logo');
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zpstfup2ohq.jpeg', '信电logo'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zpszho5efb5.jpeg', '外院logo'),
+  ('https://s36.photobucket.com/user/MedalSUN/media/logo_zpsbklxt6ri.jpeg', '统计logo'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zps28vupjhj.jpeg', '数学logo'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zpsvgemz4qa.jpeg', '经济logo'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zpsrjfg7ifc.jpeg', '金融logo'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zpsltnosqk2.jpeg', '教工logo'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zps8fb2up4y.jpeg', '计科logo'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zpsfncjof6u.jpeg', '会计logo'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zpssowuyvjp.jpeg', '国商logo'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zpsmq9rbl04.jpeg', '公法logo'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zps5b4ky2aw.jpeg', '工商logo'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zpsuvfvse4h.jpeg', '工程logo');
 
 
 -- simulate data for ca.person
