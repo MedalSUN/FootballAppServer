@@ -36,9 +36,9 @@ GRANT ca_anonymous TO ca_person;
 create table ca.image (
   id               uuid DEFAULT gen_random_uuid () primary key,
   url              text,
-  img_user         text not null check (char_length(img_user) < 80),-- 目前此表只存储头像和logo。使用这个字段进行引用
-  updated_at       timestamp default now(),
-  created_at       timestamp default now()  
+  img_user         text not null check (char_length(img_user) < 80) -- 目前此表只存储头像和logo。使用这个字段进行引用
+  -- updated_at       timestamp default now(),
+  -- created_at       timestamp default now()  
 );
 grant select on table ca.image to ca_anonymous, ca_person;
 grant update, insert on table ca.image to ca_person;
@@ -57,6 +57,7 @@ create table ca.person (
   team             text not null, -- person表中的team不能是引用football_team表的，注册时需要
   shirt_num        integer not null, -- 球衣号码
   player_img       uuid not null references ca.image(id), -- 球员的头像
+  about            text   -- 个性签名
   -- avatar           text, -- 未知意义
   -- birth_day        date,
   -- about            text,
@@ -65,8 +66,8 @@ create table ca.person (
   -- hide_speaker     boolean default false,
   -- gift_barrier     integer default 0, 礼物信息，不需要
   -- chat_id          text not null unique,  -- 这一部分是为了能够和leancloud进行连接的聊天id  在jwt中有需要 -- 2019-05-04删除chat_id字段
-  updated_at       timestamp default now(),
-  created_at       timestamp default now()
+  -- updated_at       timestamp default now(),
+  -- created_at       timestamp default now()
 );
 
 
@@ -76,7 +77,7 @@ create table ca.football_team (
    id               uuid DEFAULT gen_random_uuid () primary key,
    team_name        text not null check (char_length(team_name) < 80),
    team_logo        uuid not null references ca.image(id),
-   member_number    integer not null default 25
+   member_number    integer not null default 20
 );
 grant select on table ca.football_team to ca_anonymous, ca_person;
 comment on table ca.football_team is '球队基本信息表';
@@ -111,8 +112,8 @@ comment on table ca.match_schedule is '赛程信息表';
 -- 每场比赛的进球数表
 -- 描述各个场序的比赛的进球数据
 create table ca.match_goal (
-      id                uuid DEFAULT gen_random_uuid () primary key,
-      oreder_id         uuid not null references ca.match_schedule(id),
+      id                uuid not null references ca.match_schedule(id) primary key,
+      -- oreder_id         uuid not null references ca.match_schedule(id), id外键接于赛程表的id （后期增加杯赛，那么使用order_number就不准了。）
       goal_a            integer,-- 主队进球数
       goal_b            integer--客队进球数
 );
@@ -130,6 +131,9 @@ grant select on table ca.score to ca_anonymous, ca_person;
 comment on table ca.score is '每个球队的积分';
 
 
+-- =======注释：  助攻榜和射手榜的排名可以通过函数获取。，但是所有人的排名如何获取？？？？
+-- ==== 因此 多出来两个表。
+
 -- 射手榜
 -- 描述球员的进球数 （倒序排行）
 create table ca.shooter_list (
@@ -141,10 +145,25 @@ grant select on table ca.shooter_list to ca_anonymous, ca_person;
 comment on table ca.shooter_list is '射手榜';
 
 
+-- 助攻榜
+-- 描述球员的助攻数据
+create table ca.assist_list (
+      assist_id           uuid not null references ca.person(id) primary key,
+      assist_num          integer not null default 0
+);
+grant select on table ca.assist_list to ca_anonymous, ca_person;
+comment on table ca.assist_list is '助攻榜';
 
-
-
-
+-- 每场比赛，所有的进球数据，（哪场比赛，谁进的，第几分钟进的， 谁助攻的）
+create table ca.match_every_goal (
+      id            uuid DEFAULT gen_random_uuid () primary key,
+      match_id      uuid not null references ca.match_schedule(id),
+      shooter_id    uuid not null references ca.person(id),
+      goal_time     text not null,
+      assist_id     uuid not null references ca.person(id) --描述助攻人的id   
+);
+grant select on table ca.match_every_goal to ca_anonymous, ca_person;
+comment on table ca.match_every_goal is '每场比赛，每个进球的数据：射手，助攻人，时间';
 
 
 
@@ -169,10 +188,10 @@ create table ca_private.person_account (
   email            text not null unique check (email ~* '^.+@.+\..+$'),
   password_hash    text not null,
   phone_number     text, -- 不需要电话号码
-  email_verified   boolean, -- 不需要判断邮箱是否相同，在注册时需要查询一遍
+  email_verified   boolean -- 不需要判断邮箱是否相同，在注册时需要查询一遍
   -- person_user_type user_type, 人员的类型
-  updated_at       timestamp default now(),
-  created_at       timestamp default now()
+  -- updated_at       timestamp default now(),
+  -- created_at       timestamp default now()
 );
 
 -- 这里对private级别的账户信息授予权限，需要做进一步考虑========
