@@ -54,20 +54,10 @@ create table ca.person (
   id               uuid DEFAULT gen_random_uuid () primary key,
   player_name      text not null check (char_length(player_name) < 80),
   --last_name        text check (char_length(last_name) < 80),
-  team             text not null, -- person表中的team不能是引用football_team表的，注册时需要
+  -- team             text not null, -- person表中的team不能是引用football_team表的，注册时需要 ====2019-05-08 初始注册时不需要选择球队
   shirt_num        integer not null, -- 球衣号码
   player_img       uuid not null references ca.image(id), -- 球员的头像
   about            text   -- 个性签名
-  -- avatar           text, -- 未知意义
-  -- birth_day        date,
-  -- about            text,
-  -- header_img       uuid not null  references ca.image(id), -- 在这张表之前需要创建一个image表，用于存放图片头像
-  -- chat_state       chat_state_type default 'ACTIVE', 聊天状态，在线还是隐身，这里不需要
-  -- hide_speaker     boolean default false,
-  -- gift_barrier     integer default 0, 礼物信息，不需要
-  -- chat_id          text not null unique,  -- 这一部分是为了能够和leancloud进行连接的聊天id  在jwt中有需要 -- 2019-05-04删除chat_id字段
-  -- updated_at       timestamp default now(),
-  -- created_at       timestamp default now()
 );
 
 
@@ -77,10 +67,22 @@ create table ca.football_team (
    id               uuid DEFAULT gen_random_uuid () primary key,
    team_name        text not null check (char_length(team_name) < 80),
    team_logo        uuid not null references ca.image(id),
-   member_number    integer not null default 20
+   member_number    integer not null default 0
 );
 grant select on table ca.football_team to ca_anonymous, ca_person;
 comment on table ca.football_team is '球队基本信息表';
+
+
+-- 球队和球员的关联表（因为下载注册的并不都是球队球员，因此需要在注册完之后才自由选择球队）
+create table ca.person_team (
+    person_id     uuid not null references ca.person(id), -- 注册的人
+    team_id       uuid not null references ca.football_team(id) -- 球队
+);
+grant select on table ca.person_team to ca_anonymous, ca_person;
+comment on table ca.person_team is '球队，球员的关联表';
+
+
+
 
 
 
@@ -208,7 +210,7 @@ create table ca_private.person_account (
 create function ca.register_person(
   player_name text,
   shirt_num integer, -- 由于数据库中图片表存的是text格式，所以必须转成text格式进行查询
-  team  text,
+  -- team  text, ====2019-05-08注册时不需要添加球队信息，进入app后使用参加球队和球队关联
   email text,
   password text
 ) returns ca.person as $$
@@ -221,8 +223,8 @@ begin
   shirt_num_text = shirt_num::text;
   select id into shirt_id from ca.image where img_user = shirt_num_text;
 
-  insert into ca.person (player_name, team, shirt_num, player_img) values
-    (player_name, team, shirt_num, shirt_id)
+  insert into ca.person (player_name, shirt_num, player_img) values
+    (player_name, shirt_num, shirt_id)
     returning * into person;
 
   insert into ca_private.person_account (person_id, email, password_hash) values
@@ -232,7 +234,7 @@ begin
 end;
 $$ language plpgsql strict security definer;
 
-comment on function ca.register_person(text, integer, text, text, text) is '注册一个用户';
+comment on function ca.register_person(text, integer, text, text) is '注册一个用户';
 
 -- 创建一个数据类型： jwt
 create type ca.jwt as (
@@ -301,7 +303,7 @@ grant execute on function ca.current_person() to ca_anonymous, ca_person;
 grant execute on function ca.current_person_id() to ca_anonymous, ca_person;
 
 -- 给非登录用户授予注册权限
-grant execute on function ca.register_person(text,integer, text, text, text) to ca_anonymous;
+grant execute on function ca.register_person(text,integer, text, text) to ca_anonymous;
 
 
 -- 在表上启用行级安全性
