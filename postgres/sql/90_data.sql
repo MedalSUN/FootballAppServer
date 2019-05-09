@@ -4,26 +4,19 @@ begin;
 
 -- simulate data for ca.image
 insert into ca.image (url, img_user) values
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '1'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2265761240.jpg', '2'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2266110047.jpg', '3'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '4'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '5'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '6'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '7'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '8'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '9'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '10'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '11'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '12'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '13'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '14'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '15'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '16'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '17'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '18'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '19'),
-  ('https://img3.doubanio.com/view/movie_poster_cover/mpst/public/p2263582212.jpg', '20'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/1_zpslmxoqllr.png', '1'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/2_zpszg2edl6o.png', '2'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/3_zpst5q7ef1e.png', '3'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/4_zpst4vb6hrv.png', '4'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/5_zpsodahwvvm.png', '5'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/6_zpswqaajhti.png', '6'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/7_zps3msn4o65.png', '7'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/8_zps2fugnbri.png', '8'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/9_zpspjmoq323.png', '9'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/10_zpsyvd5p8vj.png', '10'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/11_zpsfzwbgcdg.png', '11'),
+  ('https://oi36.photobucket.com/albums/e47/MedalSUN/12_zpsm0wd0cul.png', '12'),
+  ('https://i36.photobucket.com/albums/e47/MedalSUN/other_zpss0whariq.jpeg', '其他'),
   
   ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zpstfup2ohq.jpeg', '信电logo'),
   ('https://oi36.photobucket.com/albums/e47/MedalSUN/logo_zpszho5efb5.jpeg', '外院logo'),
@@ -39,7 +32,7 @@ insert into ca.image (url, img_user) values
 insert into ca.person (player_name, shirt_num, player_img) values
 -- 工程足球队
   ('胡存浩', 9, (select id from ca.image where img_user = '9')),
-  ('潘辞', 17, (select id from ca.image where img_user = '17')),
+  ('潘辞', 17, (select id from ca.image where img_user = '10')),
 -- 信电足球队
   ('郭林亿', 11, (select id from ca.image where img_user = '11')),
   ('刘一材', 7, (select id from ca.image where img_user = '7')),
@@ -153,8 +146,7 @@ insert into ca.score (team_id, team_score) values
 -- 射手榜的模拟数据（查数据时，按照倒序进行排列）
 insert into ca.shooter_list (shooter_id, goal_num) values
 -- 信电  
-  ((select id from ca.person where player_name = '郭林亿'), 1),
-  ((select id from ca.person where player_name = '刘一材'), 1),
+  ((select id from ca.person where player_name = '郭林亿'), 2),
 -- 教工
   ((select id from ca.person where player_name = '吕长海'), 1),
 -- 国商
@@ -169,10 +161,9 @@ insert into ca.shooter_list (shooter_id, goal_num) values
 -- 助攻榜 模拟数据
 insert into ca.assist_list (assist_id, assist_num) values
 -- 信电  
-  ((select id from ca.person where player_name = '刘一材'), 1),
-  ((select id from ca.person where player_name = '郭林亿'), 1),
+  ((select id from ca.person where player_name = '刘一材'), 2),
 -- 教工
-  ((select id from ca.person where player_name = '牛勇平'), 2),
+  ((select id from ca.person where player_name = '牛勇平'), 1),
 -- 国商
   ((select id from ca.person where player_name = '李翔'), 1),
 -- 工商
@@ -184,7 +175,7 @@ insert into ca.assist_list (assist_id, assist_num) values
 -- 对每场比赛的每一个进球的详情进行描述
 insert into ca.match_every_goal (match_id, shooter_id, goal_time, assist_id) values
   ((select id from ca.match_schedule where order_number = 1), (select id from ca.person where player_name = '郭林亿'), '35', (select id from ca.person where player_name = '刘一材')),
-  ((select id from ca.match_schedule where order_number = 1), (select id from ca.person where player_name = '刘一材'), '60', (select id from ca.person where player_name = '郭林亿')),
+  ((select id from ca.match_schedule where order_number = 1), (select id from ca.person where player_name = '郭林亿'), '60', (select id from ca.person where player_name = '刘一材')),
   ((select id from ca.match_schedule where order_number = 2), (select id from ca.person where player_name = '吕长海'), '60', (select id from ca.person where player_name = '牛勇平')),
   ((select id from ca.match_schedule where order_number = 3), (select id from ca.person where player_name = '李晓峰'), '22', (select id from ca.person where player_name = '李翔')),
   ((select id from ca.match_schedule where order_number = 3), (select id from ca.person where player_name = '李浩'), '12', (select id from ca.person where player_name = '陈煜')),
