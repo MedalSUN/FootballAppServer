@@ -35,7 +35,7 @@ GRANT ca_anonymous TO ca_person;
 -- 图片表，所有的图片都存放在这一张表里，其他地方进行引用即可
 create table ca.image (
   id               uuid DEFAULT gen_random_uuid () primary key,
-  url              text,
+  url              text not null,
   img_user         text not null check (char_length(img_user) < 80) -- 目前此表只存储头像和logo。使用这个字段进行引用
   -- updated_at       timestamp default now(),
   -- created_at       timestamp default now()  
@@ -100,8 +100,8 @@ comment on table ca.football_court is '球场基本信息表';
 -- 赛程表也是由管理员在赛季初插入数据
 create table ca.match_schedule (
       id              uuid DEFAULT gen_random_uuid () primary key,
-      order_number    integer, -- 场序
-      wheel_number    integer, -- 比赛轮数
+      order_number    integer not null, -- 场序
+      wheel_number    integer not null, -- 比赛轮数
       match_date      text not null check (char_length(match_date) < 80), -- 比赛日期（为了方便，直接设置为text格式）
       team_a          uuid not null references ca.football_team(id), -- 主队
       team_b          uuid not null references ca.football_team(id),   -- 客队
@@ -116,8 +116,8 @@ comment on table ca.match_schedule is '赛程信息表';
 create table ca.match_goal (
       id                uuid not null references ca.match_schedule(id) primary key,
       -- oreder_id         uuid not null references ca.match_schedule(id), id外键接于赛程表的id （后期增加杯赛，那么使用order_number就不准了。）
-      goal_a            integer,-- 主队进球数
-      goal_b            integer--客队进球数
+      goal_a            integer not null default 0,-- 主队进球数
+      goal_b            integer not null default 0 --客队进球数
 );
 grant select on table ca.match_goal to ca_anonymous, ca_person;
 comment on table ca.match_goal is '每场比赛的进球数';
@@ -125,7 +125,7 @@ comment on table ca.match_goal is '每场比赛的进球数';
 -- 积分表
 -- 描述每个队的积分情况
 create table ca.score (
-      id                uuid DEFAULT gen_random_uuid () primary key,
+      -- id                uuid DEFAULT gen_random_uuid () primary key,
       team_id           uuid not null references ca.football_team(id),
       team_score        integer not null default 0
 );
@@ -189,7 +189,7 @@ create table ca_private.person_account (
   person_id        uuid primary key references ca.person(id) on delete cascade,
   email            text not null unique check (email ~* '^.+@.+\..+$'),
   password_hash    text not null,
-  phone_number     text, -- 不需要电话号码
+  -- phone_number     text, -- 不需要电话号码
   email_verified   boolean -- 不需要判断邮箱是否相同，在注册时需要查询一遍
   -- person_user_type user_type, 人员的类型
   -- updated_at       timestamp default now(),
