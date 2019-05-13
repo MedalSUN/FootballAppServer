@@ -162,7 +162,7 @@ create table ca.match_every_goal (
       match_id      uuid not null references ca.match_schedule(id),
       shooter_id    uuid not null references ca.person(id),
       goal_time     text not null,
-      assist_id     uuid not null references ca.person(id) --描述助攻人的id   
+      assist_id     uuid references ca.person(id) --描述助攻人的id  可以为空（自己突破得分）
 );
 grant select on table ca.match_every_goal to ca_anonymous, ca_person;
 comment on table ca.match_every_goal is '每场比赛，每个进球的数据：射手，助攻人，时间';
