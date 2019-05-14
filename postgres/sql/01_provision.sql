@@ -67,6 +67,7 @@ create table ca.football_team (
    id               uuid DEFAULT gen_random_uuid () primary key,
    team_name        text not null check (char_length(team_name) < 80),
    team_logo        uuid not null references ca.image(id),
+   team_about       text, -- 球队口号
    member_number    integer not null default 0
 );
 grant select on table ca.football_team to ca_anonymous, ca_person;
@@ -75,8 +76,9 @@ comment on table ca.football_team is '球队基本信息表';
 
 -- 球队和球员的关联表（因为下载注册的并不都是球队球员，因此需要在注册完之后才自由选择球队）
 create table ca.person_team (
-    person_id     uuid not null references ca.person(id), -- 注册的人
-    team_id       uuid not null references ca.football_team(id) -- 球队
+    person_id     uuid not null references ca.person(id) primary key, -- 注册的人
+    team_id       uuid not null references ca.football_team(id), -- 球队
+    checked       boolean not null default false
 );
 grant select on table ca.person_team to ca_anonymous, ca_person;
 comment on table ca.person_team is '球队，球员的关联表';
