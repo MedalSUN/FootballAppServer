@@ -6,6 +6,7 @@ declare
     team_current_num integer;
     team_id uuid;
     _person_id uuid;
+    repeat_join boolean;
 begin
     _person_id := ca.current_person_id();
     if _person_id is null then
@@ -14,10 +15,14 @@ begin
     select member_number into team_current_num from ca.football_team where team_name = _team_name;
     select id into team_id from ca.football_team where team_name = _team_name;
 
+    select 1 into repeat_join from ca.person_team where person_id = _person_id;
+    if repeat_join is true then
+        return '你已经申请过，或者加入过球队了！';
+    end if;   
     if team_current_num < 7 then
         insert into ca.person_team (person_id, team_id) values
         (_person_id, team_id);
-        return '参加球队成功';
+        return '已成功申请，请耐心等待';
     else
         return '名额已满，谢谢惠顾';
     end if;
