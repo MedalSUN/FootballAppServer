@@ -12,6 +12,7 @@ begin
     if _person_id is null then
         return '未登录，请先登录';
     end if;
+    -- 注意管理员在审批通过申请之后，必须要在football_team表中的数量加一
     select member_number into team_current_num from ca.football_team where team_name = _team_name;
     select id into team_id from ca.football_team where team_name = _team_name;
 
