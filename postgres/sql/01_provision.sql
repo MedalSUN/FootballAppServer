@@ -60,6 +60,14 @@ create table ca.person (
   about            text   -- 个性签名
 );
 
+-- 创建一个管理员表
+-- 相关的账户和普通的用户账户一样存储在ca_private.person_account表中
+create table ca.admin_person (
+  id               uuid DEFAULT gen_random_uuid () primary key,
+  school_name      text not null check (char_length(school_name) < 80)
+);
+
+
 
 -- 球队基本信息表
 -- 里面的数据不是任何人可以更改的，是由管理员增加的，每个赛季进行更改
