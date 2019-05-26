@@ -53,3 +53,31 @@ end;
 $$ language plpgsql strict security definer;
 comment on function ca.change_person_about(text) is '用户修改个性签名';
 grant execute on function ca.change_person_about(text) to ca_anonymous, ca_person;
+
+
+-- 创建函数，用于增加赛程
+-- 球队与球场需要在这个function中转换成各自的id再存储起来。
+create function ca.change_match_schedule(
+    _order_number integer,
+    _wheel_number integer,
+    _match_date text,
+    _team_a_id uuid,
+    _team_b_id uuid,
+    _match_location uuid
+) returns text as $$
+declare
+    _person_id uuid;
+begin
+    _person_id := ca.current_person_id();
+    if _person_id is null then
+        return '未登录，请先登录';
+    else 
+        insert into ca.match_schedule(order_number, wheel_number, match_date, team_a, team_b, match_location) values
+            (_order_number, _wheel_number, _match_date, _team_a_id, _team_b_id, _match_location);
+            return '赛程增加成功';
+    end if;
+    return '增加赛程失败';
+end;
+$$ language plpgsql strict security definer;
+comment on function ca.change_match_schedule(integer, integer, text, uuid, uuid, uuid) is '管理员增加赛程';
+grant execute on function ca.change_match_schedule(integer, integer, text, uuid, uuid, uuid) to ca_anonymous, ca_person;
