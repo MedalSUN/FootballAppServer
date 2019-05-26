@@ -56,9 +56,10 @@ insert into ca.person (player_name, shirt_num, player_img) values
   ('牛勇平', 12, (select id from ca.image where img_user = '12'));
 
 -- 管理员模拟数据
-insert into ca.admin_person (school_name) values
-  ('山东工商学院');
-
+insert into ca.admin_person (admin_name, school_name) values
+  ('AdminPerson', '山东工商学院');
+insert into ca_private.admin_person_account (admin_person_id, account_number, password_hash) values
+  ((select id from ca.admin_person where admin_name = 'AdminPerson'), '17616023616', crypt('123', gen_salt('bf')));
 --球员账户的模拟数据
 insert into ca_private.person_account (person_id, email, password_hash) values
   -- 工程足球队
