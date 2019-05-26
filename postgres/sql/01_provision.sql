@@ -64,6 +64,7 @@ create table ca.person (
 -- 相关的账户和普通的用户账户一样存储在ca_private.person_account表中
 create table ca.admin_person (
   id               uuid DEFAULT gen_random_uuid () primary key,
+  admin_name       text not null check (char_length(admin_name) < 80),
   school_name      text not null check (char_length(school_name) < 80)
 );
 
@@ -199,20 +200,15 @@ create table ca_private.person_account (
   person_id        uuid primary key references ca.person(id) on delete cascade,
   email            text not null unique check (email ~* '^.+@.+\..+$'),
   password_hash    text not null,
-  -- phone_number     text, -- 不需要电话号码
   email_verified   boolean -- 不需要判断邮箱是否相同，在注册时需要查询一遍
-  -- person_user_type user_type, 人员的类型
-  -- updated_at       timestamp default now(),
-  -- created_at       timestamp default now()
 );
 
--- 这里对private级别的账户信息授予权限，需要做进一步考虑========
--- grant select on table ca_private.person_account to ca_anonymous, ca_person;
--- grant update on table ca_private.person_account to ca_person;
--- comment on table ca_private.person_account is 'Private information about a person’s account.';
--- comment on column ca_private.person_account.password_hash is 'An opaque hash of the person’s password.';
-
-
+-- 创建保密级别的管理员账户表
+create table ca_private.admin_person_account (
+  admin_person_id        uuid primary key references ca.admin_person(id) on delete cascade,
+  account_number         text not null unique, -- 账号信息
+  password_hash          text not null
+);
 
 -- 创建函数： 用于注册用户 【修改名称和球衣号码等注册信息】
 -- 分别往两张表中插入信息：将名字插入ca.person将密码等插入ca_private.person_account
@@ -282,8 +278,28 @@ $$ language plpgsql strict security definer;
 
 comment on function ca.authenticate(text, text) is '登录用户验证成功后创建token并返回';
 
+-- 创建函数用于验证管理员登录
+CREATE FUNCTION ca.admin_authenticate ( 
+  account_number text, 
+  password text 
+) returns auth_return_type as $$ 
+DECLARE 
+  account ca_private.admin_person_account; 
+BEGIN 
+  SELECT a.* INTO account 
+  FROM ca_private.admin_person_account as a 
+  WHERE a.account_number = $1; 
 
+  if account.password_hash = crypt(password, account.password_hash) then 
+    return ((account.admin_person_id, extract(epoch from (now() + interval '1 week')))::ca.jwt, account.admin_person_id)::auth_return_type; 
+  else 
+    return null; 
+  end if; 
+END; 
+$$ language plpgsql strict security definer;
 
+comment on function ca.admin_authenticate(text, text) is '管理员登录验证成功后创建token并返回';
+grant execute on function ca.admin_authenticate(text, text) to ca_anonymous, ca_person;
 
 -- 创建函数用于获取当前登陆的用户id 
 create or replace function ca.current_person_id() returns uuid as $$
@@ -291,26 +307,43 @@ create or replace function ca.current_person_id() returns uuid as $$
 $$ language sql stable;
 comment on function ca.current_person_id() is '数据库中进行操作，获取jwt中的person_id';
 
+-- 创建函数用于获取登录的管理员的id
+create or replace function ca.current_admin_person_id() returns uuid as $$
+  select current_setting('jwt.claims.admin_person_id', true)::uuid;
+$$ language sql stable;
+comment on function ca.current_admin_person_id() is '用于获取当前登录的管理员的id';
+
 -- 创建函数用于获取当前登陆的用户,返回登录用户对象
 create function ca.current_person() returns  ca.person as $$
   select *
   from ca.person
   where id = current_setting('jwt.claims.person_id')::uuid
 $$ language sql stable;
-
 comment on function ca.current_person() is '数据库中进行操作，获取jwt中的person_id所指定的对象';
 
+-- 创建函数用于获取当前登陆的用户,返回管理员对象
+create function ca.current_admin_person() returns  ca.admin_person as $$
+  select *
+  from ca.admin_person
+  where id = current_setting('jwt.claims.person_id')::uuid
+$$ language sql stable;
+comment on function ca.current_admin_person() is '获取登录的管理员对象';
 
 grant usage on schema  ca to ca_anonymous, ca_person;
 
+-- 将ca.person表的权限进行授予，本来应该放在前面，在这里滞后操作
 grant select on table ca.person to ca_anonymous, ca_person;
 grant update, delete on table  ca.person to ca_person;
-
+-- 将ca.admin_person表的权限进行授予，本来应该放在前面，在这里滞后操作
+grant select on table ca.admin_person to ca_anonymous, ca_person;
+grant update, delete on table  ca.admin_person to ca_person;
 
 --grant execute on function ca.person_full_name(ca.person) to ca_anonymous, ca_person;
 grant execute on function ca.authenticate(text, text) to ca_anonymous, ca_person;
 grant execute on function ca.current_person() to ca_anonymous, ca_person;
 grant execute on function ca.current_person_id() to ca_anonymous, ca_person;
+grant execute on function ca.current_admin_person_id() to ca_anonymous, ca_person;
+grant execute on function ca.current_admin_person() to ca_anonymous, ca_person;
 
 -- 给非登录用户授予注册权限
 grant execute on function ca.register_person(text,integer, text, text) to ca_anonymous;
