@@ -309,7 +309,7 @@ comment on function ca.current_person_id() is '数据库中进行操作，获取
 
 -- 创建函数用于获取登录的管理员的id
 create or replace function ca.current_admin_person_id() returns uuid as $$
-  select current_setting('jwt.claims.admin_person_id', true)::uuid;
+  select current_setting('jwt.claims.person_id', true)::uuid;
 $$ language sql stable;
 comment on function ca.current_admin_person_id() is '用于获取当前登录的管理员的id';
 
