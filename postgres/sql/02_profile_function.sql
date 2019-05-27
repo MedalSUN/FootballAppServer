@@ -57,6 +57,7 @@ grant execute on function ca.change_person_about(text) to ca_anonymous, ca_perso
 
 -- 创建函数，用于增加赛程
 -- 球队与球场需要在这个function中转换成各自的id再存储起来。
+-- 虽然使用current_admin_person_id但是它并不能区分是管理员还是用户
 create function ca.change_match_schedule(
     _order_number integer,
     _wheel_number integer,
@@ -66,10 +67,10 @@ create function ca.change_match_schedule(
     _match_location uuid
 ) returns text as $$
 declare
-    _person_id uuid;
+    _admin_person_id uuid;
 begin
-    _person_id := ca.current_person_id();
-    if _person_id is null then
+    _admin_person_id := ca.current_admin_person_id();
+    if _admin_person_id is null then
         return '未登录，请先登录';
     else 
         insert into ca.match_schedule(order_number, wheel_number, match_date, team_a, team_b, match_location) values
