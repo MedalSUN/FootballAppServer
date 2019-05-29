@@ -82,3 +82,26 @@ end;
 $$ language plpgsql strict security definer;
 comment on function ca.change_match_schedule(integer, integer, text, uuid, uuid, uuid) is '管理员增加赛程';
 grant execute on function ca.change_match_schedule(integer, integer, text, uuid, uuid, uuid) to ca_anonymous, ca_person;
+
+-- 创建函数：用于增加指定的比赛的比分情况
+create function ca.change_match_goal(
+    _match_id uuid,
+    _goal_a integer,
+    _goal_b integer
+) returns text as $$
+declare
+    _admin_person_id uuid;
+begin
+    _admin_person_id := ca.current_admin_person_id();
+    if _admin_person_id is null then
+        return '未登录，请先登录';
+    else
+        insert into ca.match_goal(id, goal_a, goal_b) values
+            (_match_id, _goal_a, _goal_b);
+            return '比分增加成功';
+    end if;
+    return '增加比分失败';
+end;
+$$ language plpgsql strict security definer;
+comment on function ca.change_match_goal(uuid, integer, integer) is '管理员增加比赛比分';
+grant execute on function ca.change_match_goal(uuid, integer, integer) to ca_anonymous, ca_person;
