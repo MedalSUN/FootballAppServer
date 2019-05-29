@@ -131,6 +131,7 @@ create table ca.match_goal (
       goal_b            integer not null default 0 --客队进球数
 );
 grant select on table ca.match_goal to ca_anonymous, ca_person;
+grant update, delete on table  ca.person to ca_person;
 comment on table ca.match_goal is '每场比赛的进球数';
 
 -- 积分表
