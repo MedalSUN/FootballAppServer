@@ -144,11 +144,11 @@ insert into ca.match_schedule (order_number, wheel_number, match_date, team_a, t
 
 
 -- 进球表的模拟数据
-insert into ca.match_goal (id, goal_a, goal_b) values
-  ((select id from ca.match_schedule where order_number = 1), 0, 2),
-  ((select id from ca.match_schedule where order_number = 2), 1, 0),
-  ((select id from ca.match_schedule where order_number = 3), 1, 1),
-  ((select id from ca.match_schedule where order_number = 4), 0, 1);
+insert into ca.match_goal (id, goal_a, goal_b, finished) values
+  ((select id from ca.match_schedule where order_number = 1), 0, 2, true),
+  ((select id from ca.match_schedule where order_number = 2), 1, 0, true),
+  ((select id from ca.match_schedule where order_number = 3), 1, 1, true),
+  ((select id from ca.match_schedule where order_number = 4), 0, 1, true);
 
 
 -- 积分表的模拟数据（查数据时，按照倒序进行排列）
