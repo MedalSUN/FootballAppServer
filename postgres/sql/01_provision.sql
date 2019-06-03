@@ -128,7 +128,8 @@ create table ca.match_goal (
       id                uuid not null references ca.match_schedule(id) primary key,
       -- oreder_id         uuid not null references ca.match_schedule(id), id外键接于赛程表的id （后期增加杯赛，那么使用order_number就不准了。）
       goal_a            integer not null default 0,-- 主队进球数
-      goal_b            integer not null default 0 --客队进球数
+      goal_b            integer not null default 0, --客队进球数
+      finished          boolean default false -- 如果为true，则说明本场比赛比分已经统计完毕
 );
 grant select on table ca.match_goal to ca_anonymous, ca_person;
 grant update, delete on table  ca.person to ca_person;
@@ -177,6 +178,7 @@ create table ca.match_every_goal (
       assist_id     uuid references ca.person(id) --描述助攻人的id  可以为空（自己突破得分）
 );
 grant select on table ca.match_every_goal to ca_anonymous, ca_person;
+grant update, delete on table  ca.person to ca_person;
 comment on table ca.match_every_goal is '每场比赛，每个进球的数据：射手，助攻人，时间';
 
 
