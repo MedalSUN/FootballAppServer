@@ -105,3 +105,101 @@ end;
 $$ language plpgsql strict security definer;
 comment on function ca.change_match_goal(uuid, integer, integer) is '管理员增加比赛比分';
 grant execute on function ca.change_match_goal(uuid, integer, integer) to ca_anonymous, ca_person;
+
+
+-- 创建函数用于增加比赛的具体每一个进球
+create function ca.change_match_goal_details(
+    _team_id uuid,
+    _match_id uuid,
+    _shooter_id uuid,
+    _goal_time text,
+    _assist_id uuid
+) returns text as $$
+declare
+    _admin_person_id uuid;
+    _team_a_id uuid;
+    _match_goal_flag boolean;
+    _old_goal_num integer;
+begin
+    _admin_person_id := ca.current_admin_person_id();
+    if _admin_person_id is null then
+        return '未登录，请先登录';  
+    else 
+        insert into ca.match_every_goal(match_id, shooter_id, goal_time, assist_id) values
+            (_match_id, _shooter_id, _goal_time, _assist_id);
+        select 1 into _match_goal_flag from ca.match_goal where id = _match_id;
+        if _match_goal_flag is true then -- 比分表中已经存在当前赛事，只能update不能insert
+            select team_a into _team_a_id from ca.match_schedule where id = _match_id; -- 判断是主客队
+            if _team_a_id = _team_id then
+                update ca.match_goal set goal_a = goal_a + 1 where id = _match_id;
+                return '主队进球增加成功';
+            else
+                update ca.match_goal set goal_b = goal_b + 1 where id = _match_id;
+                return '客队进球增加成功';
+            end if;
+        else 
+            select team_a into _team_a_id from ca.match_schedule where id = _match_id;
+            if _team_a_id = _team_id then 
+                insert into ca.match_goal(id, goal_a, goal_b) values
+                    (_match_id, 1, 0);
+                    return '主队首次进球增加成功';
+            else 
+                insert into ca.match_goal(id, goal_a, goal_b) values
+                    (_match_id, 0, 1);
+                    return '客队首次进球增加成功';
+            end if;
+        end if;
+    end if;
+    return  '进球增加失败';
+end;
+$$ language plpgsql strict security definer;
+comment on function ca.change_match_goal_details(uuid, uuid, uuid, text, uuid) is '管理员增加比分';
+grant execute on function ca.change_match_goal_details(uuid, uuid, uuid, text, uuid) to ca_anonymous, ca_person;
+
+
+-- 创建函数，用于将ca.match_goal中的finished字段转变为true，完成整场比赛的比分统计
+create function ca.finished_match_goal(
+    _match_id uuid
+) returns text as $$
+declare
+    _admin_person_id uuid;
+begin
+    _admin_person_id := ca.current_admin_person_id();
+    if _admin_person_id is null then
+        return '未登录，请先登录';  
+    else
+        update ca.match_goal set finished = true where id = _match_id;
+        return '比分统计完毕';
+    end if;
+    return  '比分统计关闭失败';
+end;
+$$ language plpgsql strict security definer;
+comment on function ca.finished_match_goal(uuid) is '管理员关闭比分统计';
+grant execute on function ca.finished_match_goal(uuid) to ca_anonymous, ca_person;
+
+
+-- 创建函数： 用于接受审批结果
+create function ca.approval(
+    _person_id uuid,
+    _approval_result text
+) returns text as $$
+declare
+    _admin_person_id uuid;
+begin
+    _admin_person_id := ca.current_admin_person_id();
+    if _admin_person_id is null then
+        return '未登录，请先登录';
+    else
+        if _approval_result = 'yes' then
+            update ca.person_team set checked = true where person_id = _person_id;
+                return '审批通过成功';
+        else
+            delete from ca.person_team where person_id = _person_id;
+                return '审批驳回成功';
+        end if;
+    end if;
+    return '审批失败';
+end;
+$$ language plpgsql strict security definer;
+comment on function ca.approval(uuid, text) is '管理员审批用户参加球队';
+grant execute on function ca.approval(uuid, text) to ca_anonymous, ca_person;
