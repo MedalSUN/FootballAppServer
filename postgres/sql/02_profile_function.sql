@@ -120,6 +120,8 @@ declare
     _team_a_id uuid;
     _match_goal_flag boolean;
     _old_goal_num integer;
+    _shooter_list_flag boolean;
+    _assist_list_flag boolean;
 begin
     _admin_person_id := ca.current_admin_person_id();
     if _admin_person_id is null then
@@ -127,6 +129,21 @@ begin
     else 
         insert into ca.match_every_goal(match_id, shooter_id, goal_time, assist_id) values
             (_match_id, _shooter_id, _goal_time, _assist_id);
+        select 1 into _shooter_list_flag from ca.shooter_list where shooter_id = _shooter_id; -- 判断射手榜中是否已经有这个射手的记录
+        if _shooter_list_flag is true then
+            update ca.shooter_list set goal_num = goal_num + 1 where shooter_id = _shooter_id;
+        else
+            insert into ca.shooter_list(shooter_id, goal_num) values
+            (_shooter_id, 1);
+        end if;
+        select 1 into _assist_list_flag from ca.assist_list where assist_id = _assist_id; -- 判断助攻榜中是否已经有这个球员的记录
+        if _assist_list_flag is true then
+            update ca.assist_list set assist_num = assist_num + 1 where assist_id = _assist_id;
+        else
+            insert into ca.assist_list(assist_id, assist_num) values
+            (_assist_id, 1);
+        end if;
+        -- 下面是判断比赛比分表中数据
         select 1 into _match_goal_flag from ca.match_goal where id = _match_id;
         if _match_goal_flag is true then -- 比分表中已经存在当前赛事，只能update不能insert
             select team_a into _team_a_id from ca.match_schedule where id = _match_id; -- 判断是主客队
@@ -159,23 +176,40 @@ grant execute on function ca.change_match_goal_details(uuid, uuid, uuid, text, u
 
 -- 创建函数，用于将ca.match_goal中的finished字段转变为true，完成整场比赛的比分统计
 create function ca.finished_match_goal(
+    _team_a_id uuid,
+    _team_b_id uuid,
     _match_id uuid
 ) returns text as $$
 declare
     _admin_person_id uuid;
+    _team_a_num integer;
+    _team_b_num integer;
 begin
     _admin_person_id := ca.current_admin_person_id();
     if _admin_person_id is null then
         return '未登录，请先登录';  
     else
         update ca.match_goal set finished = true where id = _match_id;
-        return '比分统计完毕';
+        select goal_a into _team_a_num from ca.match_goal where id = _match_id;
+        select goal_b into _team_b_num from ca.match_goal where id = _match_id;
+        if _team_a_num > _team_b_num then
+            update ca.score set team_score = team_score + 3 where team_id = _team_a_id;
+            return '比分统计完毕,主队胜利';
+        elsif _team_a_num = _team_b_num then
+            update ca.score set team_score = team_score + 1 where team_id = _team_a_id;
+            update ca.score set team_score = team_score + 1 where team_id = _team_b_id;
+            return '比分统计完毕,两队平局';
+        else
+            update ca.score set team_score = team_score + 3 where team_id = _team_b_id;
+            return '比分统计完毕,客队胜利';
+        end if;
+        return '比分统计关闭失败';
     end if;
-    return  '比分统计关闭失败';
+    return '比分统计关闭失败';
 end;
 $$ language plpgsql strict security definer;
-comment on function ca.finished_match_goal(uuid) is '管理员关闭比分统计';
-grant execute on function ca.finished_match_goal(uuid) to ca_anonymous, ca_person;
+comment on function ca.finished_match_goal(uuid, uuid, uuid) is '管理员关闭比分统计';
+grant execute on function ca.finished_match_goal(uuid, uuid, uuid) to ca_anonymous, ca_person;
 
 
 -- 创建函数： 用于接受审批结果
