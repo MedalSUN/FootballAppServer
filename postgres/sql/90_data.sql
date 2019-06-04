@@ -33,6 +33,10 @@ insert into ca.person (player_name, shirt_num, player_img) values
 -- 工程足球队
   ('胡存浩', 9, (select id from ca.image where img_user = '9')),
   ('潘辞', 10, (select id from ca.image where img_user = '10')),
+  ('工程一号', 1, (select id from ca.image where img_user = '1')),
+  ('工程二号', 2, (select id from ca.image where img_user = '2')),
+  ('工程三号', 3, (select id from ca.image where img_user = '3')),
+  ('工程四号', 4, (select id from ca.image where img_user = '4')),
 -- 信电足球队
   ('郭林亿', 11, (select id from ca.image where img_user = '11')),
   ('刘一材', 7, (select id from ca.image where img_user = '7')),
@@ -65,6 +69,10 @@ insert into ca_private.person_account (person_id, email, password_hash) values
   -- 工程足球队
   ((select id from ca.person where player_name = '胡存浩'), 'test@test.test', crypt('123', gen_salt('bf'))),
   ((select id from ca.person where player_name = '潘辞'), 'test8@test.test', crypt('123', gen_salt('bf'))),
+  ((select id from ca.person where player_name = '工程一号'), 'test17@test.test', crypt('123', gen_salt('bf'))),
+  ((select id from ca.person where player_name = '工程二号'), 'test18@test.test', crypt('123', gen_salt('bf'))),
+  ((select id from ca.person where player_name = '工程三号'), 'test19@test.test', crypt('123', gen_salt('bf'))),
+  ((select id from ca.person where player_name = '工程四号'), 'test20@test.test', crypt('123', gen_salt('bf'))),
   -- 信电足球队
   ((select id from ca.person where player_name = '郭林亿'), 'test1@test.test', crypt('123', gen_salt('bf'))),
   ((select id from ca.person where player_name = '刘一材'), 'test9@test.test', crypt('123', gen_salt('bf'))),
@@ -99,19 +107,23 @@ insert into ca_private.person_account (person_id, email, password_hash) values
 -- 球队基本信息的初始模拟数据
 insert into ca.football_team (team_name, team_logo, team_about, member_number) values
   ('工程足球队',(select id from ca.image where img_user = '工程logo'), '工程工程，众志成城', 2),
-  ('工商足球队',(select id from ca.image where img_user = '工商logo'), '工商工商，工商银行', 2),
-  ('会计足球队',(select id from ca.image where img_user = '会计logo'), '会计会计，快快计算', 2),
-  ('信电足球队',(select id from ca.image where img_user = '信电logo'), '信电信电，活力无限', 2),
-  ('外院足球队',(select id from ca.image where img_user = '外院logo'), '外院外院，海纳百川', 2),
-  ('计科足球队',(select id from ca.image where img_user = '计科logo'), '计科计科，码农天下', 2),
-  ('国商足球队',(select id from ca.image where img_user = '国商logo'), '国商国商，全家从商', 2),
-  ('教工足球队',(select id from ca.image where img_user = '教工logo'), '教工教工，教定乾坤', 2);
+  ('工商足球队',(select id from ca.image where img_user = '工商logo'), '工商工商，我是工商', 2),
+  ('会计足球队',(select id from ca.image where img_user = '会计logo'), '会计会计，我是会计', 2),
+  ('信电足球队',(select id from ca.image where img_user = '信电logo'), '信电信电，我是信电', 2),
+  ('外院足球队',(select id from ca.image where img_user = '外院logo'), '外院外院，我是外院', 2),
+  ('计科足球队',(select id from ca.image where img_user = '计科logo'), '计科计科，我是计科', 2),
+  ('国商足球队',(select id from ca.image where img_user = '国商logo'), '国商国商，我是国商', 2),
+  ('教工足球队',(select id from ca.image where img_user = '教工logo'), '教工教工，我是教工', 2);
 
 
 -- 球队和球员的关联表
 insert into ca.person_team (person_id, team_id, checked) values
   ((select id from ca.person where player_name = '胡存浩'), (select id from ca.football_team where team_name = '工程足球队'), true),
   ((select id from ca.person where player_name = '潘辞'), (select id from ca.football_team where team_name = '工程足球队'), true),
+  ((select id from ca.person where player_name = '工程一号'), (select id from ca.football_team where team_name = '工程足球队'), true),
+  ((select id from ca.person where player_name = '工程二号'), (select id from ca.football_team where team_name = '工程足球队'), true),
+  ((select id from ca.person where player_name = '工程三号'), (select id from ca.football_team where team_name = '工程足球队'), true),
+  ((select id from ca.person where player_name = '工程四号'), (select id from ca.football_team where team_name = '工程足球队'), true),
   ((select id from ca.person where player_name = '李浩'), (select id from ca.football_team where team_name = '工商足球队'), true),
   ((select id from ca.person where player_name = '陈煜'), (select id from ca.football_team where team_name = '工商足球队'), true),
   ((select id from ca.person where player_name = '李进'), (select id from ca.football_team where team_name = '会计足球队'), true),
