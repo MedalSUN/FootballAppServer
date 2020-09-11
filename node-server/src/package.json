@@ -14,7 +14,7 @@
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "express": "^4.16.2",
-    "node-fetch": "^1.7.3",
+    "node-fetch": "^2.6.1",
     "node-jose": "^0.11.0",
     "nodemon": "^1.12.5",
     "postgraphile": "^4.0.1",
