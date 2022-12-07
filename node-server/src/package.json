@@ -11,9 +11,9 @@
   "description": "",
   "dependencies": {
     "async-request": "^1.2.0",
-    "body-parser": "^1.18.2",
+    "body-parser": "^1.20.1",
     "cors": "^2.8.4",
-    "express": "^4.16.2",
+    "express": "^4.18.2",
     "node-fetch": "^1.7.3",
     "node-jose": "^0.11.0",
     "nodemon": "^1.12.5",
